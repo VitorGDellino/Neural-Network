@@ -1,6 +1,6 @@
 """
 Elisa Saltori Trujillo - 8551100
-Vitor Giovani Dellinocente - 
+Vitor Giovani Dellinocente - 9277875
 
 SCC 0270 – Redes Neurais
 Profa. Dra. Roseli Aparecida Francelin Romero
