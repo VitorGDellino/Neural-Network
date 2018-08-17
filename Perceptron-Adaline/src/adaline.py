@@ -12,6 +12,7 @@ Exercício 1
 import numpy as np
 import glob
 import os
+import sys
 
 EXAMPLE_SIZE = 5
 WEIGHTS_FILE = 'weights.txt'
@@ -28,7 +29,7 @@ def step(x):
     else:
         return -1
 
-def adaline_training(weights_file = WEIGHTS_FILE,training_path = TRAINING_PATH):
+def adaline_training():
     """
     Adaline implementation to train a classifier for nxn matrixes representing
     A (-1) and inverted As (+1).
@@ -65,7 +66,7 @@ is reached
         print(WEIGHTS_FILE, "not found. Initial weights will be set to 0.")
 
     #read training examples from files
-    path = training_path #filepath for training files
+    path = TRAINING_PATH #filepath for training files
 
     for filename in glob.glob(os.path.join(path, '*.txt')):
 
@@ -116,7 +117,7 @@ is reached
 
 
 
-def adaline_classifier(weights_file = WEIGHTS_FILE,testing_path = TESTING_PATH, test_accuracy = True):
+def adaline_classifier():
     """
     Adaline implementation. Uses weights obtained from adaline_training
     to classify nxn matrixes representing A (-1) and inverted A (+1).
@@ -126,26 +127,20 @@ def adaline_classifier(weights_file = WEIGHTS_FILE,testing_path = TESTING_PATH, 
         -Classify each example
         -Display accuracy
 
-    Parameters:
-        -weights_file: file where adaline weights are saved
-        -testing path: directory containing the testing examples
-        -accuracy: whether accuracy should be calculated. Only use when the expected result
-    is available for the examples tested (it should be given on the first line of the example)
-    
     """
     weights = np.zeros((EXAMPLE_SIZE*EXAMPLE_SIZE+1))
 
     #initialize weights
     #looks for weights in file called weights.txt
     try:
-        weights = np.loadtxt(weights_file)
+        weights = np.loadtxt(WEIGHTS_FILE)
     except IOError:
         #ends program if no weights file is available
         print(WEIGHTS_FILE, "not found. Please train the model first!")
         return
 
     #read testing examples from files
-    path = testing_path #filepath for training files
+    path = TESTING_PATH #filepath for training files
 
     #for measuring accuracy
     total_error = 0 #number of examples classified incorrectly
@@ -158,10 +153,9 @@ def adaline_classifier(weights_file = WEIGHTS_FILE,testing_path = TESTING_PATH, 
 
         number_of_examples += 1
 
-        if(test_accuracy):
-            with open(filename) as f:
+        with open(filename) as f:
 
-                expected_result = int(next(f))
+            expected_result = int(next(f))
 
         example = np.reshape(np.loadtxt(filename, skiprows=1), newshape=(1, EXAMPLE_SIZE*EXAMPLE_SIZE))
         
@@ -170,12 +164,11 @@ def adaline_classifier(weights_file = WEIGHTS_FILE,testing_path = TESTING_PATH, 
 
         #activation function: hard limiter
         output = step(output)
-        
-        if(test_accuracy):
-            #error for the example
-            error = expected_result - output
+    
+        #error for the example
+        error = expected_result - output
 
-            total_error += abs(error)
+        total_error += abs(error)
 
         #result
         print("Classifying file",filename,". Expected:", expected_result, ". Output:", output)
@@ -183,11 +176,28 @@ def adaline_classifier(weights_file = WEIGHTS_FILE,testing_path = TESTING_PATH, 
     #final results
     print(number_of_examples,"input files classified.")
 
-    if(test_accuracy and number_of_examples!=0):
+    if(number_of_examples!=0):
         print("Accuracy:", 1-total_error/number_of_examples)
         
 
-        
     
 if __name__ == "__main__":
-    adaline_training()
+    
+    #usage tip
+    if(len(sys.argv)<2):
+        print("Usage:")
+        print("\tpython3 adaline.py [mode]\n")
+        print("Arguments:")
+        print("\tmode: 'train' (for training the model with training set) or 'test' (for testing the model with test set)")
+    
+    #call train or test function according to system input
+    
+    elif(sys.argv[1] == 'train'):
+        adaline_training()
+
+    elif(sys.argv[1] == 'test'):
+        adaline_classifier()
+
+    else:
+        print("Invalid arguments! Please try again.")
+
