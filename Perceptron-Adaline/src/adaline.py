@@ -18,6 +18,8 @@ WEIGHTS_FILE = 'weights.txt'
 NUMBER_OF_EXAMPLES = 12
 MAX_ITERATIONS = 100
 LEARNING_RATE = 0.5
+TRAINING_PATH = '../training'
+TESTING_PATH = '../testing'
 
 #activation function: 1 or -1
 def step(x):
@@ -26,9 +28,9 @@ def step(x):
     else:
         return -1
 
-def adaline():
+def adaline_training(weights_file = WEIGHTS_FILE,training_path = TRAINING_PATH):
     """
-    Adaline implementation to classify 5x5 matrixes as
+    Adaline implementation to train a classifier for nxn matrixes representing
     A (-1) and inverted As (+1).
 
     -Read weights from specified file (else initiates weights with 0s)
@@ -63,7 +65,7 @@ is reached
         print(WEIGHTS_FILE, "not found. Initial weights will be set to 0.")
 
     #read training examples from files
-    path = '../training' #filepath for training files
+    path = training_path #filepath for training files
 
     for filename in glob.glob(os.path.join(path, '*.txt')):
 
@@ -112,6 +114,80 @@ is reached
 
     np.savetxt(WEIGHTS_FILE, weights)
 
+
+
+def adaline_classifier(weights_file = WEIGHTS_FILE,testing_path = TESTING_PATH, test_accuracy = True):
+    """
+    Adaline implementation. Uses weights obtained from adaline_training
+    to classify nxn matrixes representing A (-1) and inverted A (+1).
+
+        -Read weights from specified file (else initiates weights with 0s)
+        -Read examples from specified path
+        -Classify each example
+        -Display accuracy
+
+    Parameters:
+        -weights_file: file where adaline weights are saved
+        -testing path: directory containing the testing examples
+        -accuracy: whether accuracy should be calculated. Only use when the expected result
+    is available for the examples tested (it should be given on the first line of the example)
+    
+    """
+    weights = np.zeros((EXAMPLE_SIZE*EXAMPLE_SIZE+1))
+
+    #initialize weights
+    #looks for weights in file called weights.txt
+    try:
+        weights = np.loadtxt(weights_file)
+    except IOError:
+        #ends program if no weights file is available
+        print(WEIGHTS_FILE, "not found. Please train the model first!")
+        return
+
+    #read testing examples from files
+    path = testing_path #filepath for training files
+
+    #for measuring accuracy
+    total_error = 0 #number of examples classified incorrectly
+    number_of_examples = 0 #total number of files classified
+
+    print("Reading files...")
+
+    #classify each file in the given path
+    for filename in glob.glob(os.path.join(path, '*.txt')):
+
+        number_of_examples += 1
+
+        if(test_accuracy):
+            with open(filename) as f:
+
+                expected_result = int(next(f))
+
+        example = np.reshape(np.loadtxt(filename, skiprows=1), newshape=(1, EXAMPLE_SIZE*EXAMPLE_SIZE))
+        
+        #output
+        output = weights[0] + np.sum(np.multiply(example, weights[1::]))
+
+        #activation function: hard limiter
+        output = step(output)
+        
+        if(test_accuracy):
+            #error for the example
+            error = expected_result - output
+
+            total_error += abs(error)
+
+        #result
+        print("Classifying file",filename,". Expected:", expected_result, ". Output:", output)
+
+    #final results
+    print(number_of_examples,"input files classified.")
+
+    if(test_accuracy and number_of_examples!=0):
+        print("Accuracy:", 1-total_error/number_of_examples)
+        
+
+        
     
 if __name__ == "__main__":
-    adaline()
+    adaline_training()
