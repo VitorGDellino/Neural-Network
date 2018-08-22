@@ -72,7 +72,7 @@ is reached
 
         with open(filename) as f:
             expected_results.append(int(next(f)))
-
+        print("reading", filename)
         examples.append(np.reshape(np.loadtxt(filename, skiprows=1), newshape=(1, EXAMPLE_SIZE*EXAMPLE_SIZE)))
 
     
@@ -107,6 +107,7 @@ is reached
         #if all examples for the loop were classified correctly, no weights were changed
         #end training
         if(changed == False):
+            print("Stopped at iteration", i);
             break
 
     ##prints weights and save them to file
