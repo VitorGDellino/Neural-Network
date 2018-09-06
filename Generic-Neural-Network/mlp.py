@@ -47,31 +47,62 @@ class Mlp:
     # Calcula a derivada de f_net ou seja, da funcao de ativacao
     # f_net -> activation_function(Sum(xi*wi) + theta(i))
     def df_dnet(self, f_net):
-        return (f_net * (1-f_net))
+        return (f_net * (np.array(1)-f_net))
     
     # Realiza o forward da rede neural
     def feed_forward(self, input_data):
 
         # Hidden Layer
         input_data.append(1)
+        input_data = np.array(input_data)
         self.hidden_nets = []
-        self.hidden_f_net = hidden_f_net = []
-        hidden_xi_wi = np.multiply(self.hidden_layer_weights_and_theta, input_data)
-        for i in range(hidden_xi_wi.shape[0]):
+        self.hidden_f_nets = hidden_f_nets = []
+        hidden_xi_wi = []
+        for i in range(self.hidden_layer_weights_and_theta.shape[0]):
+            hidden_xi_wi.append(np.multiply(self.hidden_layer_weights_and_theta[i], input_data))
+        
+        for i in range(len(hidden_xi_wi)):
             self.hidden_nets.append(np.sum(hidden_xi_wi[i]))
-            hidden_f_net.append(self.activation_function(self.hidden_nets[i]))
+            hidden_f_nets.append(self.activation_function(self.hidden_nets[i]))
 
-        self.hidden_f_net = np.copy(hidden_f_net)
+        self.hidden_f_nets = np.copy(hidden_f_nets)
 
         # Output Layer
-        hidden_f_net.append(1)
+        hidden_f_nets.append(1)
         self.output_nets = []
         self.output_f_nets = []
-        output_xi_wi = np.multiply(self.output_layer_weights_and_theta, hidden_f_net)
+        output_xi_wi = np.multiply(self.output_layer_weights_and_theta, hidden_f_nets)
         for i in range(output_xi_wi.shape[0]):
             self.output_nets.append(np.sum(output_xi_wi[i]))
             self.output_f_nets.append(self.activation_function(self.output_nets[i]))
+
     
+    def backpropagation(self, dataset, eta=0.3, threshold = 1e-3):
+        squaredError = 2*threshold
+        while(squaredError > threshold):
+            squaredError = 0
+            for i in range(len(dataset)):
+                Xi =  dataset[i] [0:self.n_neurons_input]
+                Yi =  dataset[i][self.n_neurons_input:len(dataset[0])]
+                self.feed_forward(Xi)
+
+                error = np.array(Yi) - np.array(self.output_f_nets)
+                squaredError += np.sum(np.power(error, 2))
+
+                output_delta = error * self.df_dnet(self.output_f_nets)
+
+                for i in range(self.output_layer_weights_and_theta.shape[0]):
+                    hidden_delta = np.multiply(self.df_dnet(self.hidden_f_nets),np.dot(np.matrix(output_delta), np.matrix(self.output_layer_weights_and_theta[i, 0:self.n_neurons_hiddens])))
+
+                self.output_layer_weights_and_theta = self.output_layer_weights_and_theta + eta*(np.dot(np.matrix(output_delta), np.matrix(np.append(self.hidden_f_nets, 1))))
+                aux = eta*np.dot(np.matrix(hidden_delta).T, np.matrix(Xi))
+
+                self.hidden_layer_weights_and_theta = self.hidden_layer_weights_and_theta + aux
+            
+            squaredError = squaredError/len(dataset)
+
+            print("Erro", squaredError)
+
     # Mostra a rede neural
     def show(self):
         print("INPUT " + str(self.n_neurons_input))
@@ -90,7 +121,7 @@ class Mlp:
         print(self.hidden_nets)
         print()
         print("HIDDEN F_NET")
-        print(self.hidden_f_net)
+        print(self.hidden_f_nets)
         print()
         print("OUTPUT NET")
         print(self.output_nets)
