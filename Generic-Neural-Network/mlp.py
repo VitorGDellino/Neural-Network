@@ -86,9 +86,17 @@ class Mlp:
             self.output_f_nets.append(self.activation_function(self.output_nets[i]))
 
     
+    """
+    Função de treino utilizando o algoritmo backpropagation
+    Parametros:
+        dataset: dataset de entrada, como descrito em main.py
+        eta: constante de treinamento
+        threshold: limite de tolerancia do erro
+
+    """
     def backpropagation(self, dataset, eta=0.3, threshold = 1e-3):
 
-        #number of iterations
+        #numero de iteracoes
         it = 0
 
         squaredError = 2*threshold
@@ -116,7 +124,7 @@ class Mlp:
             
             squaredError = squaredError/len(dataset)
             
-            #prints error every 100 iterations
+            #imprime erro a cada 100 iteracoes
             if(it % 100 == 0):
                 print("iteration",it," error: ",squaredError)
             it +=1

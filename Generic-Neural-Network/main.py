@@ -43,7 +43,7 @@ def main():
     nn = Mlp(INPUT_SIZE, n_neurons_hiddens, INPUT_SIZE)
 
     #train
-    nn.backpropagation(training_input)
+    nn.backpropagation(training_input, eta=0.5)
     
     #show result for first line
     nn.feed_forward(training_input[0][:INPUT_SIZE])
