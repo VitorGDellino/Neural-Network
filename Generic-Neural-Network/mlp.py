@@ -1,3 +1,12 @@
+"""
+Elisa Saltori Trujillo - 8551100
+Vitor Giovani Dellinocente - 9277875
+
+SCC 0270 – Redes Neurais
+Profa. Dra. Roseli Aparecida Francelin Romero
+
+Exercício 2
+"""
 import numpy as np
 
 import math
@@ -78,6 +87,10 @@ class Mlp:
 
     
     def backpropagation(self, dataset, eta=0.3, threshold = 1e-3):
+
+        #number of iterations
+        it = 0
+
         squaredError = 2*threshold
         while(squaredError > threshold):
             squaredError = 0
@@ -85,45 +98,29 @@ class Mlp:
                 Xi =  dataset[i] [0:self.n_neurons_input]
                 Yi =  dataset[i][self.n_neurons_input:len(dataset[0])]
 
-                #print("entrada: ",Xi)
-                #print("saida: ",Yi)
-
                 self.feed_forward(Xi)
 
                 error = np.array(Yi) - np.array(self.output_f_nets)
 
-                #print("error: ",error)
                 squaredError += np.sum(np.power(error, 2))
 
                 output_delta = error * self.df_dnet(self.output_f_nets)
-                #print("output delta\n", output_delta)
-
-                #for each neuron in the output layer
-                """
-                for i in range(self.output_layer_weights_and_theta.shape[0]):
-                    print(np.matrix(self.output_layer_weights_and_theta))
-                    print(np.matrix(output_delta))
-                    print(self.hidden_f_nets)
-                    #delta versus
-                    #temp = np.dot(np.matrix(output_delta), np.matrix(self.output_layer_weights_and_theta[i, :]))
-                    #print(temp)
-                    #hidden_delta = np.multiply(self.df_dnet(self.hidden_f_nets),np.dot(np.matrix(output_delta), np.matrix(self.output_layer_weights_and_theta[i, 0:self.n_neurons_hiddens])))
-                """
 
                 hidden_delta = np.multiply(self.df_dnet(self.hidden_f_nets),np.dot(np.matrix(output_delta), np.matrix(self.output_layer_weights_and_theta[:, 0:self.n_neurons_hiddens])))
 
-                #print(hidden_delta)
-                #print("output layer weights",self.output_layer_weights_and_theta)
+            
                 self.output_layer_weights_and_theta = self.output_layer_weights_and_theta + eta*(np.dot(np.transpose(np.matrix(output_delta)), np.matrix(np.append(self.hidden_f_nets, 1))))
                 aux = eta*np.dot(np.matrix(hidden_delta).T, np.matrix(Xi))
 
                 self.hidden_layer_weights_and_theta = self.hidden_layer_weights_and_theta + aux
             
             squaredError = squaredError/len(dataset)
+            
+            #prints error every 100 iterations
+            if(it % 100 == 0):
+                print("iteration",it," error: ",squaredError)
+            it +=1
 
-            #print("Erro", squaredError)
-
-        print("Training done")
 
     # Mostra a rede neural
     def show(self):
