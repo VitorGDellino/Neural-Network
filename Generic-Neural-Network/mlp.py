@@ -188,7 +188,9 @@ class Mlp:
                     aux[i] = eta*np.dot(np.matrix(hidden_delta[i]).T, np.matrix(np.append(self.hidden_f_nets[i-1], 1)))
 
                 print(self.hidden_layer_weights_and_theta)
-                print(aux)
+                input()
+
+                #PROBLEM HERE
                 self.hidden_layer_weights_and_theta = np.add(self.hidden_layer_weights_and_theta, aux)
              
             
