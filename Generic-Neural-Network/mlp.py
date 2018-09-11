@@ -15,18 +15,22 @@ import math
 class Mlp:
     # Criando a Rede MLP
     # n_neurons_input -> Numero de neuronios na camada de entrada, ou seja o tamanho da entrada
-    # n_neurons_hiddens -> Numero de neuronios nas camadas escondidas
+    # n_neurons_hiddens -> Numero de neuronios nas camadas escondidas (para mais de uma camada, usar um array)
     # n_neurons_output -> Numero de neuronios na camada de saida, ou seja o tamanho da saida
     # Os parâmetros abaixo nao são necessários, pois eles sao gerados aletaoriamente usando valores entre -0.5 e 0.5 (Valores positivos e negativos ajudam na convergencia)
     # hidden_layer_weights_and_theta -> Matriz contendo os valores predeterminados com os pesos e o bias das camadas escondidas, sendo que o bias é a ultima coluna da matriz
     # hidden_layer_weights_and_theta -> Matriz contendo os valores predeterminados com os pesos e o bias da camada de saida, sendo que o bias é a ultima coluna da matriz
-    def __init__(self, n_neurons_input, n_neurons_hiddens, n_neurons_output, hidden_layer_weights_and_theta = None, output_layer_weights_and_theta = None):
+    def __init__(self, n_neurons_input, n_neurons_hiddens, n_neurons_output, n_hidden_layers=1, hidden_layer_weights_and_theta = None, output_layer_weights_and_theta = None):
         # Setando o numero de neuronios em cada camada
         self.n_neurons_input = math.ceil(n_neurons_input)
-        self.n_neurons_hiddens = math.ceil(n_neurons_hiddens)
         self.n_neurons_output = math.ceil(n_neurons_output)
+        self.n_hidden_layers = math.ceil(n_hidden_layers)
+        if(n_hidden_layers==1):
+            self.n_neurons_hiddens = [math.ceil(n_neurons_hiddens)]
+        else:
+            self.n_neurons_hiddens= np.ceil(n_neurons_hiddens).astype('int')   
 
-        # Setando os pesos e o bias nas camadas escondida e de saida, respectivamente
+        # Setando os pesos e o bias nas camadas escondida e de saida, respectivamente)
         self.init_hidden_layer_weight_and_theta(hidden_layer_weights_and_theta)
         self.init_output_layer_weight_and_theta(output_layer_weights_and_theta)
     
@@ -35,7 +39,17 @@ class Mlp:
     def init_hidden_layer_weight_and_theta(self, hidden_layer_weights_and_theta):
         # Caso não há pesos e bias predeterminados pelo usuário 
         if not hidden_layer_weights_and_theta:
-            self.hidden_layer_weights_and_theta = np.random.uniform(-0.5, 0.5, (self.n_neurons_hiddens, self.n_neurons_input + 1))
+            
+            #inicializa
+            self.hidden_layer_weights_and_theta = []
+
+            #inicializa primeira camada
+            self.hidden_layer_weights_and_theta.append(np.random.uniform(-0.5, 0.5, (self.n_neurons_hiddens[0], self.n_neurons_input + 1))) 
+
+            #para cada camada escondida que nao seja a primeira
+            for i in range(1, self.n_hidden_layers):
+                self.hidden_layer_weights_and_theta.append(np.random.uniform(-0.5, 0.5, (self.n_neurons_hiddens[i], self.n_neurons_hiddens[i-1]+1)))
+            
         else:
             self.hidden_layer_weights_and_theta = hidden_layer_weights_and_theta
 
@@ -43,7 +57,7 @@ class Mlp:
     # output_layer_weights_and_theta -> Matriz contendo os valores predeterminados com os pesos e o bias da camada de saida, sendo que o bias é a ultima coluna da matriz
     def init_output_layer_weight_and_theta(self, output_layer_weights_and_theta):
         if not output_layer_weights_and_theta:
-            self.output_layer_weights_and_theta = np.random.uniform(-0.5, 0.5, (self.n_neurons_output, self.n_neurons_hiddens + 1))
+            self.output_layer_weights_and_theta = np.random.uniform(-0.5, 0.5, (self.n_neurons_output, self.n_neurons_hiddens[self.n_hidden_layers-1] + 1))
         else:
             self.output_layer_weights_and_theta = output_layer_weights_and_theta
 
@@ -65,18 +79,42 @@ class Mlp:
         input_data.append(1)
         input_data = np.array(input_data)
         self.hidden_nets = []
-        self.hidden_f_nets = hidden_f_nets = []
+        hidden_nets = []
+        self.hidden_f_nets = []
+        hidden_f_nets = []
         hidden_xi_wi = []
-        for i in range(self.hidden_layer_weights_and_theta.shape[0]):
-            hidden_xi_wi.append(np.multiply(self.hidden_layer_weights_and_theta[i], input_data))
+
+        #primeira camada escondida
+        for i in range(self.hidden_layer_weights_and_theta[0].shape[0]):
+            hidden_xi_wi.append(np.multiply(self.hidden_layer_weights_and_theta[0][i], input_data))
         
         for i in range(len(hidden_xi_wi)):
-            self.hidden_nets.append(np.sum(hidden_xi_wi[i]))
-            hidden_f_nets.append(self.activation_function(self.hidden_nets[i]))
+            hidden_nets.append(np.sum(hidden_xi_wi[i]))
+            hidden_f_nets.append(self.activation_function(hidden_nets[i]))
 
-        self.hidden_f_nets = np.copy(hidden_f_nets)
+        self.hidden_nets.append(hidden_nets)
+        self.hidden_f_nets.append(hidden_f_nets)
+
+        #demais camadas escondidas
+        for j in range(1, self.n_hidden_layers):
+            hidden_xi_wi=[]
+            hidden_nets = []
+            hidden_f_nets = []
+
+            for i in range(self.hidden_layer_weights_and_theta[j].shape[0]):
+                hidden_xi_wi.append(np.multiply(self.hidden_layer_weights_and_theta[j][i], np.append(self.hidden_f_nets[j-1],1)))
+
+        
+            for i in range(len(hidden_xi_wi)):
+                hidden_nets.append(np.sum(hidden_xi_wi[i]))
+                hidden_f_nets.append(self.activation_function(hidden_nets[i]))
+
+
+            self.hidden_nets.append(hidden_nets)
+            self.hidden_f_nets.append(hidden_f_nets)
 
         # Output Layer
+        hidden_f_nets = hidden_f_nets.copy()
         hidden_f_nets.append(1)
         self.output_nets = []
         self.output_f_nets = []
@@ -94,7 +132,7 @@ class Mlp:
         threshold: limite de tolerancia do erro
 
     """
-    def backpropagation(self, dataset, eta=0.3, threshold = 1e-3):
+    def backpropagation(self, dataset, eta=0.3, threshold = 1e-3, max_iterations=10000):
 
         #numero de iteracoes
         it = 0
@@ -130,14 +168,18 @@ class Mlp:
             it +=1
 
 
+
     # Mostra a rede neural
     def show(self):
         print("INPUT " + str(self.n_neurons_input))
         print("HIDDEN " + str(self.n_neurons_hiddens))
         print("OUTPUT " + str(self.n_neurons_output))
 
-        print("--------HIDDEN LAYER--------")
-        print(self.hidden_layer_weights_and_theta)
+        print("--------HIDDEN LAYERS--------")
+        for i in range (0, self.n_hidden_layers):
+            print("--------LAYER ",i,"--------")
+            print(self.hidden_layer_weights_and_theta[i])
+            print()
         print("----------------------------")
         print()
         print("--------OUTPUT LAYER--------")
