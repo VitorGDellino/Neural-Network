@@ -13,7 +13,7 @@ import numpy as np
 import math
 
 
-INPUT_SIZE = 4
+INPUT_SIZE = 10
 
 
 """
@@ -40,15 +40,15 @@ def main():
     training_input = generate_input()
 
     #create network with input size of n, log2 n hidden neurons and n output size
-    nn = Mlp(INPUT_SIZE, [n_neurons_hiddens,2], INPUT_SIZE, n_hidden_layers=2)
+    nn = Mlp(INPUT_SIZE, [n_neurons_hiddens, n_neurons_hiddens], INPUT_SIZE, n_hidden_layers=2)
 
     #train
-    #nn.backpropagation(training_input, eta=0.5)
+    nn.backpropagation(training_input, eta=0.5)
     
     #show result for first line
     nn.feed_forward(training_input[0][:INPUT_SIZE])
     nn.show()
- 
+
 
 """
 Generate input for the multilayer perceptron

@@ -42,14 +42,14 @@ class Mlp:
             
             #inicializa
             self.hidden_layer_weights_and_theta = []
-
+            
             #inicializa primeira camada
             self.hidden_layer_weights_and_theta.append(np.random.uniform(-0.5, 0.5, (self.n_neurons_hiddens[0], self.n_neurons_input + 1))) 
 
             #para cada camada escondida que nao seja a primeira
             for i in range(1, self.n_hidden_layers):
                 self.hidden_layer_weights_and_theta.append(np.random.uniform(-0.5, 0.5, (self.n_neurons_hiddens[i], self.n_neurons_hiddens[i-1]+1)))
-            
+         
         else:
             self.hidden_layer_weights_and_theta = hidden_layer_weights_and_theta
 
@@ -114,7 +114,7 @@ class Mlp:
             self.hidden_f_nets.append(hidden_f_nets)
 
         # Output Layer
-        hidden_f_nets = hidden_f_nets.copy()
+        hidden_f_nets = hidden_f_nets.copy() #hidden f nets da ultima camada
         hidden_f_nets.append(1)
         self.output_nets = []
         self.output_f_nets = []
@@ -145,6 +145,20 @@ class Mlp:
                 Yi =  dataset[i][self.n_neurons_input:len(dataset[0])]
 
                 self.feed_forward(Xi)
+                """
+                print("--------HIDDEN LAYERS--------")
+                for i in range (0, self.n_hidden_layers):
+                    print("--------LAYER ",i,"--------")
+                    print(self.hidden_layer_weights_and_theta[i])
+                    print()
+                print("----------------------------")
+                print()
+                print("--------OUTPUT LAYER--------")
+                print(self.output_layer_weights_and_theta)
+                print("----------------------------")
+                print(self.output_f_nets)
+                input()
+                """
 
                 error = np.array(Yi) - np.array(self.output_f_nets)
 
@@ -152,13 +166,31 @@ class Mlp:
 
                 output_delta = error * self.df_dnet(self.output_f_nets)
 
-                hidden_delta = np.multiply(self.df_dnet(self.hidden_f_nets),np.dot(np.matrix(output_delta), np.matrix(self.output_layer_weights_and_theta[:, 0:self.n_neurons_hiddens])))
+                hidden_delta = [0]*self.n_hidden_layers
+
+                #ultima camada escondida
+                hidden_delta[self.n_hidden_layers-1] = np.multiply(self.df_dnet(self.hidden_f_nets[self.n_hidden_layers-1]),
+                    np.dot(np.matrix(output_delta), np.matrix(self.output_layer_weights_and_theta[:, 0:self.n_neurons_hiddens[self.n_hidden_layers-1]])))
 
             
-                self.output_layer_weights_and_theta = self.output_layer_weights_and_theta + eta*(np.dot(np.transpose(np.matrix(output_delta)), np.matrix(np.append(self.hidden_f_nets, 1))))
-                aux = eta*np.dot(np.matrix(hidden_delta).T, np.matrix(Xi))
+                #para cada camada de neuronios, de tras para frente, com excecao da ultima
+                for i in range(self.n_hidden_layers-2, -1, -1):
+                    hidden_delta[i] = np.multiply(self.df_dnet(self.hidden_f_nets[i]),
+                        np.dot(np.matrix(hidden_delta[i+1]), np.matrix(self.hidden_layer_weights_and_theta[i+1][:, 0:self.n_neurons_hiddens[i]])))
+               
 
-                self.hidden_layer_weights_and_theta = self.hidden_layer_weights_and_theta + aux
+                self.output_layer_weights_and_theta = self.output_layer_weights_and_theta + eta*(np.dot(np.transpose(np.matrix(output_delta)), np.matrix(np.append(self.hidden_f_nets[self.n_hidden_layers-1], 1))))
+             
+                aux = [0]*self.n_hidden_layers
+                aux[0] = eta*np.dot(np.matrix(hidden_delta[0]).T, np.matrix(Xi))
+               
+                for i in range(1, self.n_hidden_layers):
+                    aux[i] = eta*np.dot(np.matrix(hidden_delta[i]).T, np.matrix(np.append(self.hidden_f_nets[i-1], 1)))
+
+                print(self.hidden_layer_weights_and_theta)
+                print(aux)
+                self.hidden_layer_weights_and_theta = np.add(self.hidden_layer_weights_and_theta, aux)
+             
             
             squaredError = squaredError/len(dataset)
             
