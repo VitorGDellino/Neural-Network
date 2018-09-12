@@ -8,6 +8,18 @@ Profa. Dra. Roseli Aparecida Francelin Romero
 Exercício 2
 """
 
+
+
+"""
+TODO
+-Read some parameters from input
+-Make function which reads input and separates it in training and testing
+-specific functions for wine and default features
+-For wine, round numbers to nearest class
+-accuracy for wine and erro quadratico medio
+
+"""
+
 from mlp import Mlp
 import numpy as np
 import math
@@ -64,6 +76,8 @@ def generate_input():
         training_input[i][i+INPUT_SIZE]=1
 
     return (training_input)
+
+
 
 
 
