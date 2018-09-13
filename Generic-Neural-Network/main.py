@@ -21,6 +21,8 @@ TODO
 """
 
 from mlp import Mlp
+from preprocessing import PreProcessing
+
 import numpy as np
 import math
 
@@ -45,6 +47,7 @@ and (1 2) the expected output.
 """
 def main():
 
+    dataset = PreProcessing("wine_dataset.in")
     #number of hidden neurons = log2(n)
     n_neurons_hiddens = math.log(INPUT_SIZE, 2)
 
