@@ -78,6 +78,7 @@ class Mlp:
         # Hidden Layer
         input_data.append(1)
         input_data = np.array(input_data)
+    
         self.hidden_nets = []
         hidden_nets = []
         self.hidden_f_nets = []

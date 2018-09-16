@@ -59,7 +59,29 @@ def main():
     nn = Mlp(13, 10, 3, n_hidden_layers=1)
     nn.backpropagation(train.values.tolist(), eta=0.5)
 
-    print(training.accuracy(nn, test, n_classes=3))
+    example = test.values.tolist()
+    print(len(example))
+    input()
+    #print(example)
+    #print(example[17])
+    #feed example
+    nn.feed_forward(example[0][:(-1*3)])
+    print(example[0])
+    nn.show_class()
+
+    nn.feed_forward(example[40][:(-1*3)])
+    print(example[40])
+    print(test.iloc[[40]].values.tolist())
+    input()
+    nn.show_class()
+
+
+    nn.feed_forward(example[31][:(-1*3)])
+    print(example[31])
+    nn.show_class()
+
+
+    #print(training.accuracy(nn, test, n_classes=3))
     """
     Input1 = test.iloc[[5]].values.tolist()
     nn.feed_forward(Input1[:(-1*3)])
