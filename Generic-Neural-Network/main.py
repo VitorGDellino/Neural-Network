@@ -47,23 +47,34 @@ and (1 2) the expected output.
 """
 def main():
 
-    dataset = PreProcessing("wine_dataset.in")
-    #number of hidden neurons = log2(n)
-    n_neurons_hiddens = math.log(INPUT_SIZE, 2)
+    dataset = PreProcessing("wine_dataset.txt")
+    dataset.normalize(ignore_first_column=True)
+    dataset.switch_first_last_column()
+    dataset.normalize_class()
 
-    #generate input: each line of a Id matrix of dimension equal toINPUT_SIZE
-    training_input = generate_input()
+    #turn dataset into list!! OK
+    #dataset.normalized_dataframe.values.tolist()
+    #turn output classes into normalized representation
 
-    #create network with input size of n, log2 n hidden neurons and n output size
-    nn = Mlp(INPUT_SIZE, [n_neurons_hiddens, n_neurons_hiddens], INPUT_SIZE, n_hidden_layers=2)
+    #then divide it into training and testing sets
+    #then, chaning parameters:
+        #train neural network
+        #get accuracy
 
+    #repeat for wine
+
+
+
+    nn = Mlp(13, 10, 3, n_hidden_layers=1)
+    #print(dataset.normalized_dataframe.values.tolist())
     #train
-    nn.backpropagation(training_input, eta=0.5)
+    nn.backpropagation(dataset.normalized_dataframe.values.tolist(), eta=0.5)
+    #nn.feed_forward(dataset[0])
     
     #show result for first line
-    nn.feed_forward(training_input[0][:INPUT_SIZE])
-    nn.show()
-
+    
+    #nn.show()
+    
 
 """
 Generate input for the multilayer perceptron

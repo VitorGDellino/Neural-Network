@@ -214,6 +214,8 @@ class Mlp:
                 print("Maximum number of iterations (", max_iterations,") reached!")
                 return
 
+        print("Error threshold reached in iteration",it,"- Final error:", squaredError)
+
 
 
     # Mostra a rede neural
