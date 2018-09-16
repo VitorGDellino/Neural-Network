@@ -22,6 +22,7 @@ TODO
 
 from mlp import Mlp
 from preprocessing import PreProcessing
+import training
 
 import numpy as np
 import math
@@ -54,23 +55,31 @@ def main():
 
     #turn dataset into list!! OK
     #dataset.normalized_dataframe.values.tolist()
-    #turn output classes into normalized representation
+    #turn output classes into normalized representation OK
 
-    #then divide it into training and testing sets
+    #then divide it into training and testing sets OK
+
+    #DO THIS
     #then, chaning parameters:
         #train neural network
         #get accuracy
 
     #repeat for wine
-
-
+    train, test = training.holdout(0.7, dataset.normalized_dataframe)
+    #print(len(dataset.normalized_dataframe))
+    #print(len(train))
+    #print(len(test))
+    #print(train)
+    #print(test)
 
     nn = Mlp(13, 10, 3, n_hidden_layers=1)
     #print(dataset.normalized_dataframe.values.tolist())
     #train
-    nn.backpropagation(dataset.normalized_dataframe.values.tolist(), eta=0.5)
-    #nn.feed_forward(dataset[0])
-    
+    nn.backpropagation(train.values.tolist(), eta=0.5)
+
+    print(training.accuracy(nn, test, n_classes=3))
+
+   
     #show result for first line
     
     #nn.show()
