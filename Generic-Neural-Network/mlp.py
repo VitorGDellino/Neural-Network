@@ -246,3 +246,6 @@ class Mlp:
         print()
         print("OUTPUT F_NET")
         print(self.output_f_nets)
+    
+    def show_class(self):
+        print(self.output_f_nets)

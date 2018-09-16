@@ -47,7 +47,7 @@ and (1 2) the expected output.
 
 """
 def main():
-    """
+    
     dataset = PreProcessing("wine_dataset.txt")
     dataset.normalize(ignore_first_column=True)
     dataset.switch_first_last_column()
@@ -57,12 +57,42 @@ def main():
     
 
     nn = Mlp(13, 10, 3, n_hidden_layers=1)
-     nn.backpropagation(train.values.tolist(), eta=0.5)
+    nn.backpropagation(train.values.tolist(), eta=0.5)
 
     print(training.accuracy(nn, test, n_classes=3))
-    """
-    dataset = PreProcessing("default_features_1059_tracks.txt")
-    dataset.normalize(ignore_first_column=False)
+
+    Input1 = test.iloc[[5]].values.tolist()
+    nn.feed_forward(Input1[:(-1*3)])
+
+    print()
+    print("Input")
+    print(Input1)
+    print("Class")
+    nn.show_class()
+    print()
+
+    Input2 = test.iloc[[40]].values.tolist()
+    nn.feed_forward(Input2[:(-1*3)])
+    
+    print()
+    print("Input")
+    print(Input2)
+    print("Class")
+    nn.show_class()
+    print()
+
+    Input3 = test.iloc[[30]].values.tolist()
+    nn.feed_forward(Input3[:(-1*3)])
+    
+    print()
+    print("Input")
+    print(Input3)
+    print("Class")
+    nn.show_class()
+    print()
+    
+    #dataset = PreProcessing("default_features_1059_tracks.txt")
+    #dataset.normalize(ignore_first_column=False)
     #turn dataset into list!! OK
     #dataset.normalized_dataframe.values.tolist()
     #turn output classes into normalized representation OK
@@ -75,21 +105,21 @@ def main():
         #get accuracy
 
     #repeat for wine
-    train, test = training.holdout(0.7, dataset.normalized_dataframe)
+    #train, test = training.holdout(0.7, dataset.normalized_dataframe)
     #print(len(dataset.normalized_dataframe))
     #print(len(train))
     #print(len(test))
     #print(train)
     #print(test)
 
-    nn = Mlp(68, [10,10], 2, n_hidden_layers=2)
+    #nn = Mlp(68, [10,10], 2, n_hidden_layers=2)
     #print(dataset.normalized_dataframe.values.tolist())
     #train
-    nn.backpropagation(train.values.tolist(), eta=0.5, max_iterations=200)
+    #nn.backpropagation(train.values.tolist(), eta=0.5, max_iterations=200)
 
     #print(training.accuracy(nn, test, n_classes=3))
 
-    print(training.squared_error(nn, test, n_classes=2))
+    #print(training.squared_error(nn, test, n_classes=2))
     #show result for first line
     
     #nn.show()
