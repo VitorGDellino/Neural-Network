@@ -14,6 +14,13 @@ class PreProcessing:
         else:
             self.normalized_dataframe = (self.dataframe - self.dataframe.min())/(self.dataframe.max() - self.dataframe.min())
 
+    def switch_first_last_column(self):
+        cols = self.dataframe.columns.tolist()
+        cols = cols[1:] + cols[0:1]
+        self.dataframe = self.dataframe[cols]
+        if(not self.normalized_dataframe.empty):
+            self.normalized_dataframe = self.normalized_dataframe[cols] 
+
     def show(self):
         print("CSV")
         print(self.dataframe)
