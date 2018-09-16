@@ -60,7 +60,7 @@ def main():
     nn.backpropagation(train.values.tolist(), eta=0.5)
 
     print(training.accuracy(nn, test, n_classes=3))
-
+    """
     Input1 = test.iloc[[5]].values.tolist()
     nn.feed_forward(Input1[:(-1*3)])
 
@@ -90,7 +90,7 @@ def main():
     print("Class")
     nn.show_class()
     print()
-    
+    """
     #dataset = PreProcessing("default_features_1059_tracks.txt")
     #dataset.normalize(ignore_first_column=False)
     #turn dataset into list!! OK
