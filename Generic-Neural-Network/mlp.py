@@ -211,7 +211,7 @@ class Mlp:
             it +=1
 
             if(it >= max_iterations):
-                print("Maximum number of iterations (", max_iterations,") reached!")
+                print("Maximum number of iterations (", max_iterations,") reached! - Final error:", squaredError)
                 return
 
         print("Error threshold reached in iteration",it,"- Final error:", squaredError)

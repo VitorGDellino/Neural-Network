@@ -47,12 +47,22 @@ and (1 2) the expected output.
 
 """
 def main():
-
+    """
     dataset = PreProcessing("wine_dataset.txt")
     dataset.normalize(ignore_first_column=True)
     dataset.switch_first_last_column()
     dataset.normalize_class()
 
+    train, test = training.holdout(0.7, dataset.normalized_dataframe)
+    
+
+    nn = Mlp(13, 10, 3, n_hidden_layers=1)
+     nn.backpropagation(train.values.tolist(), eta=0.5)
+
+    print(training.accuracy(nn, test, n_classes=3))
+    """
+    dataset = PreProcessing("default_features_1059_tracks.txt")
+    dataset.normalize(ignore_first_column=False)
     #turn dataset into list!! OK
     #dataset.normalized_dataframe.values.tolist()
     #turn output classes into normalized representation OK
@@ -72,14 +82,14 @@ def main():
     #print(train)
     #print(test)
 
-    nn = Mlp(13, 10, 3, n_hidden_layers=1)
+    nn = Mlp(68, [10,10], 2, n_hidden_layers=2)
     #print(dataset.normalized_dataframe.values.tolist())
     #train
-    nn.backpropagation(train.values.tolist(), eta=0.5)
+    nn.backpropagation(train.values.tolist(), eta=0.5, max_iterations=200)
 
-    print(training.accuracy(nn, test, n_classes=3))
+    #print(training.accuracy(nn, test, n_classes=3))
 
-   
+    print(training.squared_error(nn, test, n_classes=2))
     #show result for first line
     
     #nn.show()
