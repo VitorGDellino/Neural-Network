@@ -81,7 +81,7 @@ def main():
     nn.show_class()
 
 
-    #print(training.accuracy(nn, test, n_classes=3))
+    print(training.accuracy(nn, test, n_classes=3))
     """
     Input1 = test.iloc[[5]].values.tolist()
     nn.feed_forward(Input1[:(-1*3)])

@@ -39,10 +39,10 @@ def accuracy(neural_network, test_data, n_classes):
         #gets output from neural network and rounds it to int
         output = np.round(neural_network.output_f_nets)
 
-        print("input:",example)
-        print("f_nets:",neural_network.output_f_nets)
-        print("output:",output)
-        print()
+        #print("input:",example)
+        #print("f_nets:",neural_network.output_f_nets)
+        #print("output:",output)
+        #print()
         
 
         #compares expected result and output
