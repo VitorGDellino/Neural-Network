@@ -9,12 +9,13 @@ import math
 INPUT_SIZE = 10
 
 def wine_test():
-    # Carregando e Normalizando os dados
+    # Carregando e Normalizando os dados da base de vinhos
     dataset = PreProcessing("wine_dataset.txt")
     dataset.normalize(ignore_first_column=True)
     dataset.switch_first_last_column()
     dataset.normalize_class()
 
+    # Atributos a serem variados nos testes
     n_layers = [1,2]
     hidden_layer = [10, [5,5]]
     momentums = [0.3, 0.5, 0.7]
@@ -22,6 +23,7 @@ def wine_test():
     etas = [0.3, 0.5, 0.7]
     ps = [0.5, 0.7, 0.9]
 
+    # Teste
     for layer in n_layers:
         for momentum in momentums:
             for eta in etas:
@@ -55,9 +57,12 @@ def wine_test():
 
 
 def music_test():
+
+    # Carregando e normalizando os dados da base de musicas
     dataset = PreProcessing("default_features_1059_tracks.txt")
     dataset.normalize(ignore_first_column=False)
 
+    # Atributos a serem variados no teste
     n_layers = [1,2]
     hidden_layer = [20, [10,10]]
     momentums = [0.3, 0.5, 0.7]
@@ -65,6 +70,7 @@ def music_test():
     etas = [0.3, 0.5, 0.7]
     ps = [0.5, 0.7, 0.9]
 
+    # Teste
     for layer in n_layers:
         for momentum in momentums:
             for eta in etas:
@@ -76,7 +82,7 @@ def music_test():
                         print()
                         nn = Mlp(68, hidden_layer[layer - 1], 2, n_hidden_layers=layer)
                         nn.backpropagation(train.values.tolist(), eta=eta, max_iterations=max_iteration)
-                        print("ACCURACY =", training.accuracy(nn, test, n_classes=2))
+                        print("SQUARED ERROR =", training.squared_error(nn, test, n_classes=2))
                         print()
 
                         print("Input 1")
