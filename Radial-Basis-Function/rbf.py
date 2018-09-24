@@ -43,10 +43,11 @@ class Rbf:
     #   x - input array
     #   c - center array
     def activation_function(self, x, c, beta):
+        #UPDATE ME SO I CAN DO ALL THE OUTPUTS AT THE SAME TIME?
         return (np.exp(-beta*np.sqrt(np.sum((x-c)**2))))
 
     
-    def define_centers(dataset):
+    def define_centers(aelf, dataset):
         """
         Define centers for network. Each center is the mean of a given class in the dataset
 
@@ -96,25 +97,14 @@ class Rbf:
 
                 
                 #feed forward
-                #DO FEED FORWARD HERE  
-                
- 
-
+                #DO FEED FORWARD HERE 
 
 
                 error = np.array(Yi) - np.array(self.output_f_nets)
 
                 squaredError += np.sum(np.power(error, 2))
 
-                output_delta = error * self.df_dnet(self.output_f_nets)
-
-                hidden_delta = np.multiply(self.df_dnet(self.hidden_f_nets),np.dot(np.matrix(output_delta), np.matrix(self.output_layer_weights_and_theta[:, 0:self.n_neurons_hidden])))
-
-            
-                self.output_layer_weights_and_theta = self.output_layer_weights_and_theta + eta*(np.dot(np.transpose(np.matrix(output_delta)), np.matrix(np.append(self.hidden_f_nets, 1))))
-                aux = eta*np.dot(np.matrix(hidden_delta).T, np.matrix(Xi))
-
-                self.hidden_layer_weights_and_theta = self.hidden_layer_weights_and_theta + aux
+                #UPDATE WEIGHTS HERE!!!
             
             squaredError = squaredError/len(dataset)
             
@@ -123,6 +113,9 @@ class Rbf:
                 print("iteration",it," error: ",squaredError)
             it +=1
 
+    # Realiza o forward da rede neural
+    def feed_forward(self, input_data):
+        pass
 
     # Mostra a rede neural
     def show(self):
