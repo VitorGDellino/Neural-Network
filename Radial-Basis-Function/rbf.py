@@ -100,18 +100,24 @@ class Rbf:
 
                 squaredError += np.sum(np.power(error, 2))
 
+                #print(self.output_f_nets)
+                #print(Yi)
+                #print(error)
+                
+
                 aux = eta*np.dot(np.transpose(np.matrix(error)), np.matrix(np.append(self.hidden_outputs, 1)))
-                aux += momentum*output_momentum
-        
+                #aux += momentum*output_momentum
+                #input()
                 self.output_layer_weights_and_theta += aux
             
-                output_momentum = aux
+                #output_momentum = aux
             
             squaredError = squaredError/len(dataset)
             
             #imprime erro a cada 100 iteracoes
             if(it % 100 == 0):
                 print("iteration",it," error: ",squaredError)
+                
             it +=1
 
             if(it >= max_iterations):
@@ -135,8 +141,7 @@ class Rbf:
     # Sigmoid activation function
     # net -> Sum(xi*wi) + theta(i)
     # theta = bias
-    def activation_function(self, net):
-        return (1/(1 + math.exp(-net)))
+   
 
     # Feed input data to network
     def feed_forward(self, input_data):
@@ -156,7 +161,7 @@ class Rbf:
         output_xi_wi = np.multiply(self.output_layer_weights_and_theta, hidden_f_nets)
         for i in range(output_xi_wi.shape[0]):
             self.output_nets.append(np.sum(output_xi_wi[i]))
-            self.output_f_nets.append(self.activation_function(self.output_nets[i]))
+            self.output_f_nets.append(self.output_nets[i])
 
        
     # Mostra a rede neural
