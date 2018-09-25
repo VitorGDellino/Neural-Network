@@ -36,20 +36,12 @@ class Rbf:
         else:
             self.output_layer_weights_and_theta = output_layer_weights_and_theta
 
-    # Activation function - radial basis function
-    # 
-    # Parameters:
-    #   beta - distance coefficient
-    #   x - input array
-    #   c - center array
-    def activation_function(self, x, c, beta):
-        #UPDATE ME SO I CAN DO ALL THE OUTPUTS AT THE SAME TIME?
-        return (np.exp(-beta*np.sqrt(np.sum((x-c)**2))))
-
     
-    def define_centers(aelf, dataset):
+    def define_centers(self, dataset):
         """
         Define centers for network. Each center is the mean of a given class in the dataset
+
+        dataset: input dataset. Class columns should be the last ones to the right.
 
         """
 
@@ -63,48 +55,56 @@ class Rbf:
 
         for i in range (0, self.n_neurons_hidden):
             #get all rows in dataset belonging to that class
-            class_examples = dataset[dataset[n_columns-i] == 1]
+            #don't get class columns
+            class_examples = dataset[dataset[n_columns-i] == 1].iloc[:,:-self.n_neurons_output]
 
             #find center of each class (mean of all data of that class)
             self.centers[i] = class_examples.mean()
 
             #beta is the average of the euclidian distance between the examples and the center
             self.betas[i] = np.sum(np.sqrt(np.sum((class_examples-self.centers[i])**2, axis=1)))/len(class_examples.index)
+            self.betas[i] = 1/(2*(self.betas[i]**2))
+
 
     
     """
-    Função de treino utilizando o algoritmo backpropagation
-    Parametros:
-        dataset: dataset de entrada, como descrito em main.py
-        eta: constante de treinamento
-        threshold: limite de tolerancia do erro
-
+    Training function for network
+    Parameters:
+        dataset: input dataset. Panda dataframe
+        eta: learning rate
+        threshold: error threshold
     """
-    def train(self, dataset, eta=0.3, threshold = 1e-3):
+    def train(self, dataset, eta=0.3, threshold = 1e-3, momentum=0.5, max_iterations=30000):
 
         #define centers of given data
         self.define_centers(dataset)
 
         #numero de iteracoes
         it = 0
+        output_momentum = 0
 
         squaredError = 2*threshold
         while(squaredError > threshold):
             squaredError = 0
             for i in range(len(dataset)):
-                Xi =  dataset[i] [0:self.n_neurons_input]
-                Yi =  dataset[i][self.n_neurons_input:len(dataset[0])]
+                #print("item ", i)
+                Xi =  dataset.iloc[i,0:self.n_neurons_input]
+                #print(Xi)
+                Yi =  dataset.iloc[i,self.n_neurons_input:]
+                #print(Yi)
 
-                
                 #feed forward
-                #DO FEED FORWARD HERE 
-
+                self.feed_forward(Xi)
 
                 error = np.array(Yi) - np.array(self.output_f_nets)
 
                 squaredError += np.sum(np.power(error, 2))
 
-                #UPDATE WEIGHTS HERE!!!
+                aux = eta*(np.dot(np.transpose(np.matrix(error)), np.matrix(np.append(self.hidden_outputs, 1))))
+                aux += momentum*output_momentum
+        
+                self.output_layer_weights_and_theta += aux
+                output_momentum = aux
             
             squaredError = squaredError/len(dataset)
             
@@ -113,10 +113,51 @@ class Rbf:
                 print("iteration",it," error: ",squaredError)
             it +=1
 
-    # Realiza o forward da rede neural
-    def feed_forward(self, input_data):
-        pass
+            if(it >= max_iterations):
+                print("Maximum number of iterations (", max_iterations,") reached! - Final error:", squaredError)
+                return
 
+        print("Error threshold reached in iteration",it,"- Final error:", squaredError)
+
+
+    # Activation function - radial basis function
+    # 
+    # Parameters:
+    #   beta - distance coefficient
+    #   x - input array
+    #   c - center array
+    def radial_activation_function(self, x, c, beta):
+
+        x = np.array(x)
+        return (np.exp(-beta*np.sqrt(np.sum((x-c)**2, axis=1))))
+
+    # Sigmoid activation function
+    # net -> Sum(xi*wi) + theta(i)
+    # theta = bias
+    def activation_function(self, net):
+        return (1/(1 + math.exp(-net)))
+
+    # Feed input data to network
+    def feed_forward(self, input_data):
+        """
+        Input data: list containing input values. No class columns allowed.
+        """
+
+        #radial neurons
+        self.hidden_outputs = self.radial_activation_function(input_data, self.centers, self.betas)
+
+
+        # Output Layer
+        hidden_f_nets = self.hidden_outputs.copy() #hidden f nets da ultima camada
+        hidden_f_nets = np.append(hidden_f_nets, 1)
+        self.output_nets = []
+        self.output_f_nets = []
+        output_xi_wi = np.multiply(self.output_layer_weights_and_theta, hidden_f_nets)
+        for i in range(output_xi_wi.shape[0]):
+            self.output_nets.append(np.sum(output_xi_wi[i]))
+            self.output_f_nets.append(self.activation_function(self.output_nets[i]))
+
+       
     # Mostra a rede neural
     def show(self):
         print("INPUT " + str(self.n_neurons_input))
