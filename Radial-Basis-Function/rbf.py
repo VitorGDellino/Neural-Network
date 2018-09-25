@@ -61,7 +61,8 @@ class Rbf:
             #find center of each class (mean of all data of that class)
             self.centers[i] = class_examples.mean()
 
-            #beta is the average of the euclidian distance between the examples and the center
+            #sigma is the average of the euclidian distance between the examples and the center
+            #beta is 1/(2*sigma*sigma)
             self.betas[i] = np.sum(np.sqrt(np.sum((class_examples-self.centers[i])**2, axis=1)))/len(class_examples.index)
             self.betas[i] = 1/(2*(self.betas[i]**2))
 
@@ -87,11 +88,10 @@ class Rbf:
         while(squaredError > threshold):
             squaredError = 0
             for i in range(len(dataset)):
-                #print("item ", i)
+                
                 Xi =  dataset.iloc[i,0:self.n_neurons_input]
-                #print(Xi)
                 Yi =  dataset.iloc[i,self.n_neurons_input:]
-                #print(Yi)
+                
 
                 #feed forward
                 self.feed_forward(Xi)
@@ -100,23 +100,17 @@ class Rbf:
 
                 squaredError += np.sum(np.power(error, 2))
 
-                #print(self.output_f_nets)
-                #print(Yi)
-                #print(error)
-                
-
                 aux = eta*np.dot(np.transpose(np.matrix(error)), np.matrix(np.append(self.hidden_outputs, 1)))
-                #aux += momentum*output_momentum
-                #input()
+
                 self.output_layer_weights_and_theta += aux
-            
-                #output_momentum = aux
+
             
             squaredError = squaredError/len(dataset)
             
             #imprime erro a cada 100 iteracoes
             if(it % 100 == 0):
                 print("iteration",it," error: ",squaredError)
+
                 
             it +=1
 
@@ -163,6 +157,7 @@ class Rbf:
             self.output_nets.append(np.sum(output_xi_wi[i]))
             self.output_f_nets.append(self.output_nets[i])
 
+
        
     # Mostra a rede neural
     def show(self):
@@ -177,11 +172,6 @@ class Rbf:
         print(self.output_layer_weights_and_theta)
         print("----------------------------")
         print()
-        print("HIDDEN NET")
-        print(self.hidden_nets)
-        print()
-        print("HIDDEN F_NET")
-        print(self.hidden_f_nets)
         print()
         print("OUTPUT NET")
         print(self.output_nets)

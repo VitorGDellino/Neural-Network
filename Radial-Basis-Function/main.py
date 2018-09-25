@@ -22,6 +22,7 @@ TODO
 
 from preprocessing import PreProcessing
 from rbf import Rbf
+import training
 
 import numpy as np
 import math
@@ -47,24 +48,32 @@ and (1 2) the expected output.
 """
 def main():
     
+
     dataset = PreProcessing("seeds_dataset.txt", separator='\s+')
     #print(dataset.dataframe)
+    #dataset = PreProcessing("wine_dataset.txt")
+    #dataset.normalize(ignore_first_column=True)
+    #dataset.switch_first_last_column()
+    #dataset.normalize_class()
+
     dataset.normalize()
     dataset.normalize_class()
     #print(dataset.normalized_dataframe)
 
-    #train, test = training.holdout(0.7, dataset.normalized_dataframe)
+    train, test = training.holdout(0.7, dataset.normalized_dataframe)
     
 
     nn = Rbf(7, 3)
+    #nn = Rbf(13, 3)
 
   
     #print()
-    nn.train(dataset.normalized_dataframe, eta=0.3, momentum=0)
+    nn.train(train, eta=0.5, momentum=0, max_iterations=200)
     Input1 = dataset.normalized_dataframe.iloc[[5]].values.tolist()
     #print("input", Input1)
     #print(Input1[0][:(-1*3)])
-    nn.feed_forward(Input1[0][:(-1*3)])
+    print(training.accuracy(nn, test, 3))
+
     
     
     """
