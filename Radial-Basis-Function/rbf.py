@@ -100,10 +100,11 @@ class Rbf:
 
                 squaredError += np.sum(np.power(error, 2))
 
-                aux = eta*(np.dot(np.transpose(np.matrix(error)), np.matrix(np.append(self.hidden_outputs, 1))))
+                aux = eta*np.dot(np.transpose(np.matrix(error)), np.matrix(np.append(self.hidden_outputs, 1)))
                 aux += momentum*output_momentum
         
                 self.output_layer_weights_and_theta += aux
+            
                 output_momentum = aux
             
             squaredError = squaredError/len(dataset)
@@ -129,7 +130,7 @@ class Rbf:
     def radial_activation_function(self, x, c, beta):
 
         x = np.array(x)
-        return (np.exp(-beta*np.sqrt(np.sum((x-c)**2, axis=1))))
+        return (np.exp(-beta*np.sum((x-c)**2, axis=1)))
 
     # Sigmoid activation function
     # net -> Sum(xi*wi) + theta(i)
