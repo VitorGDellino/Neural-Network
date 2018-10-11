@@ -35,12 +35,6 @@ def main():
   #train model
   model = train()
 
-
-  #check for directory test_images
-  #if it doesnt exist, create it and fill it with some test_images
-  if(not os.path.exists(test_directory)):
-    save_as_images()
-  
   #test on saved images
   test_on_saved_images(model)
 
@@ -106,6 +100,9 @@ def test_on_saved_images(model):
   for filename in glob.glob(path): 
       im=imageio.imread(filename)
       labels.append(filename)
+      print(im)
+      #reverse image
+      im = 255 - im
       image_list.append(im)
 
   images = np.array(image_list)
@@ -121,39 +118,6 @@ def test_on_saved_images(model):
 
   for i in range(0, predictions.shape[0]):
     print(str(labels[i])+":", predictions[i])
-
-
-def save_as_images():
-  """
-  Select 4 random images from set pertaining to different labels and save them as png
-  """
-
-  #loading data
-  mnist = keras.datasets.mnist
-  (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-
-  #create directory for files
-  os.makedirs(test_directory, exist_ok=True)
-
-  count = 0
-  number_user = [0]*10 #used for checking if a label has already been used
-
-  while(count < 4):
-    #get a random image from test set
-    index = random.randint(0, test_images.shape[0]-1)
-
-    #check if class has already been selected
-    if(number_user[test_labels[index]]==0):
-
-      #mark label as used
-      number_user[test_labels[index]] = 1
-
-      path = os.path.join(test_directory, str(test_labels[index])+".png")
-      #save image
-      imageio.imwrite(path, test_images[index], "png")
-      count += 1
-
-  
 
 
 if __name__ == "__main__":
