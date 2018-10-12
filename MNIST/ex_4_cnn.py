@@ -100,10 +100,15 @@ def test_on_saved_images(model):
   for filename in glob.glob(path): 
       im=imageio.imread(filename)
       labels.append(filename)
-      print(im)
+    
       #reverse image
       im = 255 - im
-      image_list.append(im)
+      
+      #normalize image
+      im = im/255.0
+
+      #append to list
+      image_list.append(im[:,:,0])
 
   images = np.array(image_list)
 
@@ -118,6 +123,7 @@ def test_on_saved_images(model):
 
   for i in range(0, predictions.shape[0]):
     print(str(labels[i])+":", predictions[i])
+    print("Result:", np.argmax(predictions[i]))
 
 
 if __name__ == "__main__":
