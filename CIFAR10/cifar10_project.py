@@ -45,8 +45,8 @@ def main():
 def train():
 
   #loading data
-  mnist = keras.datasets.cifar10 
-  (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+  cifar10 = keras.datasets.cifar10 
+  (train_images, train_labels), (test_images, test_labels) = cifar10.load_data()
 
   #normalizing data to [0,1]
   train_images = train_images / 255.0
@@ -79,7 +79,7 @@ def train():
                 metrics=['accuracy'])
 
   #train model
-  model.fit(train_images, train_labels, epochs=2)
+  model.fit(train_images, train_labels, epochs=1)
 
   #test accuracy
   test_loss, test_acc = model.evaluate(test_images, test_labels)
@@ -98,7 +98,7 @@ def test_on_saved_images(model):
   labels = []
 
   #read all images in test directory
-  path = os.path.join(test_directory, "*.png")
+  path = os.path.join(test_directory, "*_.jpg")
 
   for filename in glob.glob(path): 
       im=imageio.imread(filename)
@@ -111,15 +111,15 @@ def test_on_saved_images(model):
       im = im/255.0
 
       #append to list
-      image_list.append(im[:,:,0])
+      image_list.append(im[:,:,:])
 
   images = np.array(image_list)
 
     #reshape data for use in network - from 3D to 4D (add channels dimension)
   if K.image_data_format() == 'channels_first':
-      images = images.reshape(images.shape[0], 1, img_rows, img_cols)
+      images = images.reshape(images.shape[0], n_channels, img_rows, img_cols)
   else:
-      images = images.reshape(images.shape[0], img_rows, img_cols, 1)
+      images = images.reshape(images.shape[0], img_rows, img_cols, n_channels)
 
   #predictions for each one:
   predictions = model.predict(images)
