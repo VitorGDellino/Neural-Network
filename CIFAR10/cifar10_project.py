@@ -27,7 +27,11 @@ import glob
 test_directory = "test_images"
 
 # input image dimensions
-img_rows, img_cols = 28, 28
+img_rows, img_cols = 32, 32
+
+# input number of color channel
+n_channels = 3
+
 
 def main():
 
@@ -41,7 +45,7 @@ def main():
 def train():
 
   #loading data
-  mnist = keras.datasets.fashion_mnist
+  mnist = keras.datasets.cifar10 
   (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
   #normalizing data to [0,1]
@@ -51,13 +55,13 @@ def train():
   
   #reshape data for use in network - from 3D to 4D (add channels dimension)
   if K.image_data_format() == 'channels_first':
-      train_images = train_images.reshape(train_images.shape[0], 1, img_rows, img_cols)
-      test_images = test_images.reshape(test_images.shape[0], 1, img_rows, img_cols)
-      input_shape = (1, img_rows, img_cols)
+      train_images = train_images.reshape(train_images.shape[0], n_channels, img_rows, img_cols)
+      test_images = test_images.reshape(test_images.shape[0], n_channels, img_rows, img_cols)
+      input_shape = (n_channels, img_rows, img_cols)
   else:
-      train_images = train_images.reshape(train_images.shape[0], img_rows, img_cols, 1)
-      test_images = test_images.reshape(test_images.shape[0], img_rows, img_cols, 1)
-      input_shape = (img_rows, img_cols, 1)
+      train_images = train_images.reshape(train_images.shape[0], img_rows, img_cols, n_channels)
+      test_images = test_images.reshape(test_images.shape[0], img_rows, img_cols, n_channels)
+      input_shape = (img_rows, img_cols, n_channels)
 
 
   #building model
@@ -101,7 +105,7 @@ def test_on_saved_images(model):
       labels.append(filename)
     
       #reverse image
-      im = 255 - im
+      #im = 255 - im
       
       #normalize image
       im = im/255.0
