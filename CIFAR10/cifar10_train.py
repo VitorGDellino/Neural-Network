@@ -5,7 +5,17 @@ Vitor Giovani Dellinocente - 9277875
 SCC 0270 – Redes Neurais
 Profa. Dra. Roseli Aparecida Francelin Romero
 
-Exercício 4
+Projeto 2
+
+This file trains a model with the CIFAR10 dataset.
+The resulting model is then saved on disk.
+
+Results:
+
+  Final training acc: 0.8084
+
+  Test accuracy: 0.7587
+
 """
 
 # TensorFlow and tf.keras
@@ -25,7 +35,6 @@ import os
 import glob
 
 
-test_directory = "test_images"
 label_names = ["airplane", "automobile", "bird", "cat",
 "deer", "dog", "frog", "horse", "ship", "truck"]
 model_name = 'keras_cifar10_trained_model.h5'
@@ -41,18 +50,21 @@ n_channels = 3
 def main():
 
   #train model
-  #model = train()
-  model = load_model()
+  model = train()
 
   #test on saved images
   test_on_saved_images(model)
 
 
 def train():
+  """
+  Train a model to classify cifar10
+  The model is then saved on disk
+  """
 
   save_dir = os.path.join(os.getcwd(), 'saved_models')
   
-
+  #training configs
   batch_size = 32
   epochs = 20
 
@@ -96,7 +108,6 @@ def train():
                 metrics=['accuracy'])
 
   #train model
-  #model.fit(train_images, train_labels, epochs=10)
   model.fit(train_images, train_labels, batch_size=batch_size, epochs=epochs, shuffle=True)
 
   #test accuracy
@@ -104,6 +115,7 @@ def train():
 
   print('Test accuracy:', test_acc)
 
+  #saves model on disk
   if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
   model_path = os.path.join(save_dir, model_name)
@@ -112,53 +124,6 @@ def train():
 
   return model
 
-
-def load_model():
-
-  filepath = os.path.join(os.getcwd(), 'saved_models', model_name)
-  model = keras.models.load_model(filepath)
-  return model
-
-def test_on_saved_images(model):
-  """
-  Get images from the test directory and use model to predict output
-  """
-
-  image_list = []
-  labels = []
-
-  #read all images in test directory
-  path = os.path.join(test_directory, "*_.jpg")
-
-  for filename in glob.glob(path): 
-      im=imageio.imread(filename)
-      labels.append(filename)
-    
-      #reverse image
-      #im = 255 - im
-      
-      #normalize image
-      im = im/255.0
-
-      #append to list
-      image_list.append(im[:,:,:])
-
-  images = np.array(image_list)
-
-    #reshape data for use in network - from 3D to 4D (add channels dimension)
-  if K.image_data_format() == 'channels_first':
-      images = images.reshape(images.shape[0], n_channels, img_rows, img_cols)
-  else:
-      images = images.reshape(images.shape[0], img_rows, img_cols, n_channels)
-
-  #predictions for each one:
-  predictions = model.predict(images)
-
-  np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
-
-  for i in range(0, predictions.shape[0]):
-    print(str(labels[i])+":", predictions[i])
-    print("Result:", np.argmax(predictions[i]), "("+label_names[np.argmax(predictions[i])]+")")
 
 
 if __name__ == "__main__":
