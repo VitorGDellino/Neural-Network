@@ -96,22 +96,26 @@ def test_on_saved_images(model):
   print("Output:")
   print()
 
+  #accuracy - how many images were correctly classified
   acc = 0
 
   for i in range(0, predictions.shape[0]):
 
-
     
     #check if label is correct (label comes from filename)
+    #so images should be named as their class label
     correct = False
     p = re.compile(label_names[np.argmax(predictions[i])])
     m = p.search(labels[i])
+
+    #if the name of the predicted class is in the filename, prediction is correct
     if(m != None):
       correct = True
 
     print(str(labels[i])+":", predictions[i])
     print("Result:", np.argmax(predictions[i]), "("+label_names[np.argmax(predictions[i])]+")")
 
+    #is the label correct?
     if(correct == True):
       acc += 1
       print("Correct")
