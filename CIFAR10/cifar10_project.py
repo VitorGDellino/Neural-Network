@@ -154,6 +154,8 @@ def test_on_saved_images(model):
   #predictions for each one:
   predictions = model.predict(images)
 
+  np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
+
   for i in range(0, predictions.shape[0]):
     print(str(labels[i])+":", predictions[i])
     print("Result:", np.argmax(predictions[i]), "("+label_names[np.argmax(predictions[i])]+")")
