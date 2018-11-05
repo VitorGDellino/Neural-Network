@@ -16,6 +16,9 @@ class PCA_Network:
 		self.input_weights = np.random.uniform(-0.5, 0.5, (self.n_neurons_output, self.n_neurons_input))
 		self.input_weights = (self.input_weights - np.min(self.input_weights))/(np.max(self.input_weights) - np.min(self.input_weights))
 
+		norm = np.linalg.norm(self.input_weights, axis=1)
+		self.input_weights /= norm[:,None]
+
 		#side weights
 		self.neuron_weights = np.random.uniform(-0.5, 0.5, (self.n_neurons_output, self.n_neurons_output))
 		self.neuron_weights = np.tril(self.neuron_weights, -1) #zeroes upper triangle + diagonal
@@ -42,7 +45,7 @@ class PCA_Network:
 
 
 
-	def train(self, input_data, threshold = 0.0001, max_iterations = 10000, learning_rate=0.5, side_learning_rate=0.3, momentum=0.3):
+	def train(self, input_data, threshold = 0.0001, max_iterations = 2500, learning_rate=0.1, side_learning_rate=0.05, momentum=0.1):
 
 		n_examples, _ = np.shape(input_data)
 		momentum_input_weights = np.zeros(np.shape(self.input_weights))
@@ -88,6 +91,8 @@ class PCA_Network:
 				momentum = max(alpha*momentum, 0.0001)
 				learning_rate = max(alpha*learning_rate, 0.0001)
 				side_learning_rate = max(alpha*side_learning_rate, 0.0002)
+				#print(np.amax(np.abs(self.neuron_weights)))
+				#input()
 
 			if(np.amax(np.abs(self.neuron_weights)) < threshold):
 				print("Threshold reached!", np.amax(np.abs(self.neuron_weights)) )

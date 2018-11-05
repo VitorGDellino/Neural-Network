@@ -4,7 +4,7 @@ import numpy as np
 
 def main():
 
-	pca_n = PCA_Network(13, 3)
+	pca_n = PCA_Network(13, 8)
 
 	data, target = dt.load_wine(return_X_y=True)
 	data = np.matrix(data)
