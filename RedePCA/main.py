@@ -1,23 +1,50 @@
 from pca_network import PCA_Network
 import sklearn.datasets as dt
 import numpy as np
+import tensorflow as tf
+#from tensorflow import keras
+
+N_COMPONENTS = 3
 
 def main():
 
-	pca_n = PCA_Network(13, 8)
+	pca_n = PCA_Network(13, N_COMPONENTS)
 
 	data, target = dt.load_wine(return_X_y=True)
 	data = np.matrix(data)
 
 	norm = (data - np.mean(data, axis=0))/np.std(data, axis=0)
 
-	#pca.feed_forward(data[0,:])
-	pca_n.train(norm)
+	
+	#pca_n.train(norm)
 
+	print("PCA adaptativa:")
 	print(np.transpose(pca_n.input_weights))
+	print()
 
 	_, _, eig_vecs = pca(norm)
-	print(eig_vecs)
+	print("PCA")
+	print(eig_vecs[:,:N_COMPONENTS])
+	print()
+
+	#projetar dados via PCA adaptativa
+	output = feed_net(norm, pca_n)
+
+	#treinar e testar via MPL
+	#	dados originais (normalizados)
+	#	dados projetados
+
+
+def feed_net(data, pca_n):
+
+	output = np.zeros((len(data), N_COMPONENTS))
+	#print(output)
+
+	for i in range(0, len(data)):
+		output[i] = np.transpose(pca_n.feed_forward(data[i]))
+
+	return output
+
 
 
 def pca(data):

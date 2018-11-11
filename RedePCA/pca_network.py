@@ -41,6 +41,8 @@ class PCA_Network:
 		for i in range(1, self.n_neurons_output):
 			self.output[i] += np.dot(self.neuron_weights[i], self.output)
 
+		return self.output
+
 
 
 
