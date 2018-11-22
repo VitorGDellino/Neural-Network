@@ -100,15 +100,12 @@ def train_test_original_dataset(norm, target_cat):
     model.add(keras.layers.Dense(10, input_dim=13, activation='relu'))
     model.add(keras.layers.Dense(8, activation='relu'))
     model.add(keras.layers.Dense(6, activation='relu'))
-    model.add(keras.layers.Dense(6, activation='relu'))
-    model.add(keras.layers.Dense(4, activation='relu'))
-    model.add(keras.layers.Dense(2, activation='relu'))
     model.add(keras.layers.Dense(3, activation='softmax'))
 
 
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
 
-    model.fit(x_train, y_train, batch_size=15, epochs=1000, verbose=0)
+    model.fit(x_train, y_train, batch_size=15, epochs=2000, verbose=0)
 
     test_loss, test_acc = model.evaluate(x_test, y_test)
 
@@ -123,11 +120,8 @@ def train_test_pca(pca_data, target_cat):
 
     model = keras.Sequential()
     model.add(keras.layers.Dense(10, input_dim=N_COMPONENTS, activation='relu'))
-    model.add(keras.layers.Dense(8, activation='relu'))
-    model.add(keras.layers.Dense(6, activation='relu'))
     model.add(keras.layers.Dense(6, activation='relu'))
     model.add(keras.layers.Dense(4, activation='relu'))
-    model.add(keras.layers.Dense(2, activation='relu'))
     model.add(keras.layers.Dense(3, activation='softmax'))
 
     
