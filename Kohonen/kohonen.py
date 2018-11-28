@@ -62,14 +62,14 @@ def test(weights, data, classes):
         for row in data:
                 index = bmu(weights, row)
                 if classes[i] == 0:
-                        if result_map[index][0] <= 0.5:
-                                result_map[index] += np.asarray([0.5,0,0])
+                        if result_map[index][0] <= 0.9:
+                                result_map[index] += np.asarray([0.1,0,0])
                 elif classes[i] == 1:
-                        if result_map[index][1] <= 0.5:
-                                result_map[index] += np.asarray([0,0.5,0])
+                        if result_map[index][1] <= 0.9:
+                                result_map[index] += np.asarray([0,0.1,0])
                 elif classes[i] == 2:
-                        if result_map[index][2] <= 0.5:
-                                result_map[index] += np.asarray([0,0,0.5])
+                        if result_map[index][2] <= 0.9:
+                                result_map[index] += np.asarray([0,0,0.1])
                 i+=1
 
         result_map = np.flip(result_map,0)
@@ -83,7 +83,7 @@ def main():
     data = np.asmatrix(data)
     data = (data - np.amin(data))/(np.amax(data) - np.amin(data))
     weights = init_weight(data.shape[1], nrow=7, ncol=7)
-    train(data, weights)
+    train(data, weights, max_iter = 100)
     weights = (weights - np.amin(weights))/(np.amax(weights) - np.amin(weights))
     test(weights, data, target)
 
